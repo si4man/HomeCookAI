@@ -1,0 +1,12 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.HomeCookAI" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pink</item>
+        <item name="colorOnPrimary">@android:color/black</item>
+        <item name="colorPrimaryContainer">@color/pink_light</item>
+        <item name="colorOnPrimaryContainer">@color/pink_dark</item>
+
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="fontFamily">@font/montserrat</item>
+
+    </style>
+</resources>
