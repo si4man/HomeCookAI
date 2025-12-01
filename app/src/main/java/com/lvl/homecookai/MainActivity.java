@@ -1,20 +1,21 @@
 package com.lvl.homecookai;
 
 import android.os.Bundle;
-import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
+
+    private BottomNavigationView bottomNavigation;
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,24 +28,37 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        TextView geminiResponseTextView = findViewById(R.id.gemini_response);
+        bottomNavigation = findViewById(R.id.bottom_navigation);
+        fragmentManager = getSupportFragmentManager();
 
-        GeminiService geminiService = new GeminiService();
-        ListenableFuture<String> result = geminiService.generateContent("Напиши рецепт борща в 3 предложениях");
-        Futures.addCallback(result, new FutureCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                runOnUiThread(() -> {
-                    geminiResponseTextView.setText(result);
-                });
+        if (savedInstanceState == null) {
+            loadFragment(new HomeFragment());
+            bottomNavigation.setSelectedItemId(R.id.nav_home);
+        }
+
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            Fragment fragment = null;
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.nav_home) {
+                fragment = new HomeFragment();
+            } else if (itemId == R.id.nav_camera) {
+                fragment = new CameraFragment();
+            } else if (itemId == R.id.nav_history) {
+                fragment = new HistoryFragment();
             }
 
-            @Override
-            public void onFailure(Throwable t) {
-                runOnUiThread(() -> {
-                    geminiResponseTextView.setText("Error: " + t.getMessage());
-                });
+            if (fragment != null) {
+                loadFragment(fragment);
+                return true;
             }
-        }, ContextCompat.getMainExecutor(this));
+            return false;
+        });
+    }
+
+    private void loadFragment(Fragment fragment) {
+        fragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 }
